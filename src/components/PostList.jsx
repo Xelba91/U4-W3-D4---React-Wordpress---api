@@ -1,84 +1,29 @@
-import React, { useState, useEffect } from "react";
-import Post from "./Post";
-import PostDetail from "./PostDetail";
+import React from "react";
+import { Row, Col, Card, Button } from "react-bootstrap";
 
-const PostList = () => {
-  const [posts, setPosts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPost, setSelectedPost] = useState(null);
-
-  const fetchPosts = () => {
-    fetch("http://localhost/e-commerce/wp-json/wp/v2/posts?_embed")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Errore durante il recupero dei post");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPosts(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const filteredPosts = searchTerm
-    ? posts.filter((post) => post.title.rendered.toLowerCase().includes(searchTerm.toLowerCase()))
-    : posts;
-
-  const deletePost = (postId) => {
-    // Codifica le credenziali per l'autenticazione di base
-    const username = "xelba91";
-    const password = "Xaji4qH8sWSBZJWjCD5beJZv";
-    const credentials = window.btoa(`${username}:${password}`);
-
-    fetch(`http://localhost/e-commerce/wp-json/wp/v2/posts/${postId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${credentials}`, // Aggiungi le credenziali all'intestazione Authorization
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Errore durante l'eliminazione del post");
-        }
-        return response.json();
-      })
-      .then(() => {
-        // Rimuovi il post dalla lista aggiornando lo stato
-        setPosts(posts.filter((post) => post.id !== postId));
-      })
-      .catch((error) => {
-        console.error("Errore durante l'eliminazione del post:", error);
-      });
-  };
-
+const PostList = ({ posts, onEdit, onDelete }) => {
   return (
-    <div>
-      <h1>Post List</h1>
-      <input type="text" placeholder="Cerca post..." onChange={(e) => setSearchTerm(e.target.value)} />
-      {selectedPost ? (
-        <div>
-          <button onClick={() => setSelectedPost(null)}>Back to Posts</button>
-          <PostDetail post={selectedPost} />
-        </div>
-      ) : (
-        <div className="d-flex flex-wrap">
-          {filteredPosts.map((post) => (
-            <div key={post.id}>
-              <Post post={post} />
-              <button onClick={() => deletePost(post.id)}>Delete</button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <Row>
+      {posts.map((post) => (
+        <Col key={post.id} md={4} className="mb-4">
+          <Card>
+            {post._embedded && post._embedded["wp:featuredmedia"] && (
+              <Card.Img variant="top" src={post._embedded["wp:featuredmedia"][0].source_url} alt="Post Image" />
+            )}
+            <Card.Body>
+              <Card.Title dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+              <Card.Text dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
+              <Button variant="info" onClick={() => onEdit(post)}>
+                Modifica
+              </Button>{" "}
+              <Button variant="danger" onClick={() => onDelete(post.id)}>
+                Elimina
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      ))}
+    </Row>
   );
 };
 
