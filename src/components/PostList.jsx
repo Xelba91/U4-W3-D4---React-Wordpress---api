@@ -13,12 +13,14 @@ const PostList = ({ posts, onEdit, onDelete }) => {
             <Card.Body>
               <Card.Title dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
               <Card.Text dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
-              <Button variant="info" onClick={() => onEdit(post)}>
-                Modifica
-              </Button>{" "}
-              <Button variant="danger" onClick={() => onDelete(post.id)}>
-                Elimina
-              </Button>
+              <div className="d-flex justify-content-center">
+                <Button className="me-2" variant="info" onClick={() => onEdit(post)}>
+                  Modifica
+                </Button>{" "}
+                <Button variant="danger" onClick={() => onDelete(post.id)}>
+                  Elimina
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>

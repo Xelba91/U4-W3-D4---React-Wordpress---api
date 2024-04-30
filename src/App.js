@@ -94,22 +94,25 @@ const App = () => {
   };
 
   const handleDelete = (postId) => {
-    fetch(`http://localhost/e-commerce/wp-json/wp/v2/posts/${postId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa("xelba91:Xaji4qH8sWSBZJWjCD5beJZv")}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Errore durante l'eliminazione del post");
-        }
-        fetchPosts();
+    const confirmDelete = window.confirm("Sei sicuro di voler eliminare questo post?");
+    if (confirmDelete) {
+      fetch(`http://localhost/e-commerce/wp-json/wp/v2/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa("xelba91:Xaji4qH8sWSBZJWjCD5beJZv")}`,
+        },
       })
-      .catch((error) => {
-        console.error("Errore durante l'eliminazione del post:", error);
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Errore durante l'eliminazione del post");
+          }
+          fetchPosts();
+        })
+        .catch((error) => {
+          console.error("Errore durante l'eliminazione del post:", error);
+        });
+    }
   };
   const handleNextPage = () => {
     if (currentPage < totalPages) {
