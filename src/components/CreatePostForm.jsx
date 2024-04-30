@@ -6,11 +6,18 @@ const CreatePost = ({ show, onClose, onCreate, onUpdate, editMode, formData }) =
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    if (formData) {
-      setTitle(formData.title.rendered);
-      setContent(formData.content.rendered);
+    if (editMode) {
+      // Se il form è in modalità di modifica e un articolo è stato selezionato, imposta i valori dei campi del form con i dati dell'articolo selezionato
+      if (formData) {
+        setTitle(formData.title.rendered);
+        setContent(formData.content.rendered);
+      }
+    } else {
+      // Altrimenti, reimposta lo stato dei campi del form in modo che siano vuoti
+      setTitle("");
+      setContent("");
     }
-  }, [formData]);
+  }, [editMode, formData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
